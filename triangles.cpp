@@ -42,11 +42,8 @@ class NodeRef {
 
 public:
     int id() const { return id_; }
-
     int value() const { return triangle_->items_[id_]; }
-
     size_t level() const { return level_; }
-
     bool final() const { return level_ == triangle_->height_ - 1; }
 
     size_t num_children() const {
