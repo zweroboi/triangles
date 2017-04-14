@@ -29,9 +29,6 @@ public:
     NodeRef head() const;
 
 private:
-    NodeRef node_child(const NodeRef& node, size_t n) const;
-
-private:
     std::vector<int> items_;  // Triangle items storage.
     size_t height_;           // Triangle height.
     size_t order_;            // Number of child node references for a single node.
