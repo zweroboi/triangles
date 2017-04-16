@@ -12,7 +12,7 @@ class NodeRef;
 
 class Triangle {
     friend class NodeRef;
-    friend std::istream &operator>>(std::istream& is, Triangle& triangle);
+    friend std::istream& operator>>(std::istream& is, Triangle& triangle);
 
 public:
     Triangle()
@@ -93,7 +93,7 @@ size_t Triangle::row_size(size_t level) const {
     return 0;
 }
 
-std::istream &operator>>(std::istream& is, Triangle& triangle) {
+std::istream& operator>>(std::istream& is, Triangle& triangle) {
     std::string line;
     size_t expected = 1;  // Expected number of integers in next read string.
     while (std::getline(is, line)) {
