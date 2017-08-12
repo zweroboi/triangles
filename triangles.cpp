@@ -15,13 +15,10 @@ class Triangle {
     friend std::istream& operator>>(std::istream& is, Triangle& triangle);
 
 public:
-    Triangle()
-      : height_(0),
-        order_(0)
-    {}
+    Triangle() : height_(0), order_(0) {}
 
-    bool empty() const { return items_.empty(); }
-    size_t num_items() const { return items_.size(); }
+    bool empty() const { return nodes_.empty(); }
+    size_t num_nodes() const { return nodes_.size(); }
     size_t height() const { return height_; }
 
     size_t row_size(size_t level) const;
@@ -29,20 +26,20 @@ public:
     NodeRef head() const;
 
 private:
-    std::vector<int> items_;  // Triangle items storage.
+    std::vector<int> nodes_;  // Triangle nodes storage.
     size_t height_;           // Triangle height.
     size_t order_;            // Number of child node references for a single node.
 };
 
 //
-// Triangle node reference
+// Triangle node reference.
 
 class NodeRef {
     friend class Triangle;
 
 public:
     int id() const { return id_; }
-    int value() const { return triangle_->items_[id_]; }
+    int value() const { return triangle_->nodes_[id_]; }
     size_t level() const { return level_; }
     bool final() const { return level_ == triangle_->height_ - 1; }
 
@@ -65,10 +62,9 @@ public:
 
 private:
     NodeRef(size_t id, size_t level, const Triangle* triangle)
-      : id_(id),
-        level_(level),
-        triangle_(triangle)
-    {}
+            : id_(id),
+              level_(level),
+              triangle_(triangle) {}
 
 private:
     const Triangle* triangle_;
@@ -77,7 +73,7 @@ private:
 };
 
 //
-// Triangle methods and I/O implementation
+// Triangle methods and I/O implementation.
 
 NodeRef Triangle::head() const {
     if (!empty()) {
@@ -103,24 +99,24 @@ std::istream& operator>>(std::istream& is, Triangle& triangle) {
         triangle.height_++;
         std::istringstream iss(line);
         size_t count = 0;
-        int item;
-        while (iss >> item || !iss.eof()) {
+        int value;
+        while (iss >> value || !iss.eof()) {
             if (iss.fail()) {
                 iss.clear();
-                std::string item;
-                iss >> item;
+                std::string s;
+                iss >> s;
                 std::ostringstream oss;
-                oss << "at line " << triangle.height_ << ": can't parse integer: " << item;
+                oss << "at line " << triangle.height_ << ": can't parse integer: " << s;
                 throw std::runtime_error(oss.str());
             }
-            triangle.items_.push_back(item);
+            triangle.nodes_.push_back(value);
             count++;
         }
         if (triangle.height_ == 2) {
-            triangle.order_ = count;  // Line 2 should contain the number of children for a single node.
+            triangle.order_ = count;  // Line 2 contains all children of the root node.
         } else if (count != expected) {
             std::ostringstream oss;
-            oss << "at line " << triangle.height_ << ": expected " << expected << " items, got " << count;
+            oss << "at line " << triangle.height_ << ": expected " << expected << " nodes, got " << count;
             throw std::runtime_error(oss.str());
         }
         expected = triangle.row_size(triangle.height_);
@@ -129,14 +125,14 @@ std::istream& operator>>(std::istream& is, Triangle& triangle) {
 }
 
 //
-// Max path sum algorithm implementattion
+// Max path sum algorithm implementation.
 
 int max_path_sum(const Triangle& triangle) {
     if (triangle.empty()) {
         return 0;
     }
 
-    size_t cache_size = triangle.num_items() - triangle.row_size(triangle.height() - 1);
+    size_t cache_size = triangle.num_nodes() - triangle.row_size(triangle.height() - 1);
     std::vector<int> max_path_cache(cache_size);
     std::vector<bool> max_path_cached(cache_size, false);
 
@@ -212,6 +208,7 @@ int main(int argc, char* argv[]) {
 
     Triangle triangle;
     int max_sum;
+
     try {
         std::cerr << "Reading triangle from " << filename << "... " << std::flush;
         input >> triangle;
